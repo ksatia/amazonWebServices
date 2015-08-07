@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import <AWSCore/AWSCore.h>
+#import <AWSCognito/AWSCognito.h>
 
 @interface AppDelegate ()
 
@@ -16,9 +18,24 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+
+    
+    AWSCognitoCredentialsProvider *credentialsProvider = [[AWSCognitoCredentialsProvider alloc]
+                                                          initWithRegionType:AWSRegionUSEast1
+                                                          identityPoolId:@"us-east-1:16f2381e-de42-46df-92fd-fdb4df9b7e0a"];
+    
+    AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:AWSRegionUSEast1 credentialsProvider:credentialsProvider];
+    
+    [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
+    
+    NSString *cognitoId = credentialsProvider.identityId;
+    
+    NSLog(@"%@", cognitoId);
+    
+    
     return YES;
 }
+
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
