@@ -75,7 +75,7 @@
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 
-    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
+    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
     
     [self.image setImage:image];
     
@@ -96,7 +96,7 @@
 -(void) uploadImage:(NSDictionary*)info {
 
     imageObject *a = [imageObject new];
-    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
+    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
     NSString *imagePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"upload-image.tmp"];
     NSData *imageData = UIImagePNGRepresentation(image);
 
@@ -258,8 +258,8 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             if (self.imageObjects.count == 0) {
                 [self.image setImage:nil];
+                [self.tableView reloadData];
             }
-            [self.tableView reloadData];
         });
         
         return nil;
