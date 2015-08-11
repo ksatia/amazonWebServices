@@ -48,11 +48,11 @@
     if ([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
         if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
             [iPhonePicker allowsEditing];
-            [iPhonePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+            [iPhonePicker setSourceType:UIImagePickerControllerSourceTypeCamera];
         }
         else {
             [iPhonePicker setAllowsEditing:YES];
-            [iPhonePicker setSourceType:UIImagePickerControllerSourceTypeCamera];
+            [iPhonePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
         }
         
         [self presentViewController:iPhonePicker animated:YES completion:nil];
@@ -208,6 +208,7 @@
  - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
      imageObject *a = [self.imageObjects objectAtIndex:indexPath.row];
+     self.image.image = a.image;
      cell.textLabel.text = a.key;
      return cell;
  }
@@ -233,15 +234,15 @@
      imageObject *a = [self.imageObjects objectAtIndex:indexPath.row];
      [self.imageObjects removeObject:a];
      [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-     AWSS3DeleteObjectRequest *deleteReqest = [AWSS3DeleteObjectRequest new];
-     deleteReqest.bucket = @"karanphotos";
-     deleteReqest.key = a.key;
+     AWSS3DeleteObjectRequest *deleteRequest = [AWSS3DeleteObjectRequest new];
+     deleteRequest.bucket = @"karanphotos";
+     deleteRequest.key = a.key;
      
-     [self deleteObjectFromBucket:deleteReqest];
- } }
+     [self deleteObjectFromBucket:deleteRequest andIndexPath:indexPath];
+ }}
 
 
--(void)deleteObjectFromBucket:(AWSS3DeleteObjectRequest *)deleteRequest {
+-(void)deleteObjectFromBucket:(AWSS3DeleteObjectRequest *)deleteRequest andIndexPath:(NSIndexPath *)indexPath {
 
     AWSS3 *s3 = [AWSS3 defaultS3];
     
@@ -259,6 +260,10 @@
             if (self.imageObjects.count == 0) {
                 [self.image setImage:nil];
                 [self.tableView reloadData];
+            }
+            else if (self.imageObjects.count >0) {
+                imageObject *new = [self.imageObjects objectAtIndex:(indexPath.row-1)];
+                [self.image setImage:new.image];
             }
         });
         
